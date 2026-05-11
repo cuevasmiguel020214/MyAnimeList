@@ -79,7 +79,8 @@ export const scaleIn: Variants = {
 };
 
 /** Floating animation (used for hero poster) */
-export const floatingAnimation = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const floatingAnimation: any = {
   y: [-8, 8, -8],
   transition: {
     duration: 4,

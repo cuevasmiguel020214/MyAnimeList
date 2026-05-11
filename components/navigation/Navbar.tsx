@@ -22,9 +22,9 @@ import { slideUp } from '@/lib/animations';
 const navLinks = [
   { label: 'Anime', href: '/' },
   { label: 'Manga', href: '/manga' },
-  { label: 'Comunidad', href: '#' },
-  { label: 'Rankings', href: '#' },
-  { label: 'Noticias', href: '#' },
+  { label: 'Comunidad', href: '/community' },
+  { label: 'Rankings', href: '/rankings' },
+  { label: 'Noticias', href: '/news' },
 ];
 
 export default function Navbar() {
@@ -53,12 +53,12 @@ export default function Navbar() {
               <Link href="/" className="flex items-center gap-2.5 group" id="nav-logo">
                 <div className="relative">
                   <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-blue-500/30 transition-shadow duration-300">
-                    <span className="text-white font-bold text-sm">AV</span>
+                    <span className="text-white font-bold text-sm">MAL</span>
                   </div>
                   <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent hidden sm:block">
-                  AniVault
+                  MyAnimeList
                 </span>
               </Link>
 

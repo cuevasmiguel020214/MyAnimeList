@@ -7,12 +7,9 @@ import { motion } from 'framer-motion';
 import {
   Star,
   Heart,
-  Share2,
-  BookOpen,
   Plus,
   TrendingUp,
   Users,
-  Calendar,
   ChevronDown,
   ChevronLeft,
   ChevronRight,

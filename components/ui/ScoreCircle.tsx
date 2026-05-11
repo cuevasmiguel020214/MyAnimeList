@@ -24,6 +24,7 @@ export default function ScoreCircle({ score, size = 120, label = 'PUNTUACIÓN' }
   const color = getScoreColor(score);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

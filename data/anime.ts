@@ -134,7 +134,7 @@ export const trendingAnime: Anime[] = [
     score: 9.05,
     episodes: 1,
     status: 'Upcoming',
-    type: 'Película',
+    type: 'Movie',
     genres: ['Acción', 'Drama', 'Fantasía'],
     year: 2026,
     studio: 'MAPPA',

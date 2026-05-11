@@ -21,7 +21,7 @@ interface AnimeCardProps {
  * - Usa `motion` para animaciones escalonadas
  * - Tiene manejadores `onClick`
  */
-export default function AnimeCard({ anime, index = 0 }: AnimeCardProps) {
+export default function AnimeCard({ anime, index: _index = 0 }: AnimeCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
