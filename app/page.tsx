@@ -9,7 +9,7 @@ import { featuredAnime, trendingAnime, topAiringAnime, continueWatchingData, rec
 /**
  * Página Principal — Componente de Servidor.
  *
- * Página de inicio de AniVault. Como Componente de Servidor:
+ * Página de inicio. Como Componente de Servidor:
  * - Importa datos mock directamente (se reemplazará por fetch más adelante)
  * - Pasa datos como props a componentes cliente que necesitan interactividad
  * - Renderiza la estructura estática en el servidor para un FCP rápido

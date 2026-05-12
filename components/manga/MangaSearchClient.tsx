@@ -19,7 +19,7 @@ interface MangaSearchClientProps {
  * Recibe el dataset completo como props desde el Componente de Servidor padre.
  * Maneja: estado de input de búsqueda, toggle de filtros, filtrado en cliente.
  */
-export default function MangaSearchClient({ mangaList, genreFilters }: MangaSearchClientProps) {
+export default function MangaSearchClient({ mangaList, genreFilters: _genreFilters }: MangaSearchClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(true);
 
@@ -90,15 +90,7 @@ export default function MangaSearchClient({ mangaList, genreFilters }: MangaSear
       {showFilters && (
         <section className="py-8">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.h3
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              className="text-lg font-bold text-white mb-5"
-            >
-              Explorar por Género
-            </motion.h3>
-            <GenreFilterGrid filters={genreFilters} />
+            <GenreFilterGrid />
           </div>
         </section>
       )}
