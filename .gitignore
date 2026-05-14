@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencias
 node_modules/
 
@@ -28,3 +29,4 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+=======

@@ -1,3 +1,4 @@
+
 # 🎬 AniVault — Anime List Mejorado
 
 Plataforma Full Stack para explorar, filtrar y gestionar anime y manga.

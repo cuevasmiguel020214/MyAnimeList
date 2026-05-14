@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* ============================================
+   AniVault — Premium Dark Design System
+   ============================================ */
+
+@theme inline {
+  /* — Brand Colors — */
+  --color-bg-primary: #0F172A;
+  --color-bg-secondary: #111827;
+  --color-bg-card: #1E293B;
+  --color-bg-card-hover: #334155;
+  --color-border-subtle: rgba(255,255,255,0.08);
+  --color-border-hover: rgba(255,255,255,0.15);
+  --color-accent: #3B82F6;
+  --color-accent-glow: #60A5FA;
+  --color-accent-pink: #FF4D8D;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+
+  /* — Detail Page Dark Palette — */
+  --color-detail-bg: #0B0F19;
+  --color-detail-card: #151A22;
+  --color-detail-card-hover: #1C2230;
+  --color-detail-border: rgba(255,255,255,0.06);
+  --color-detail-accent: #FF4D8D;
+
+  /* — Spacing Scale — */
+  --spacing-section: 5rem;
+
+  /* — Font Family — */
+  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+/* ————————————————————————————
+   Base & Reset
+   ———————————————————————————— */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* scroll-behavior managed by data-scroll-behavior attribute on <html> */
+}
+
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.35);
+  color: #fff;
+}
+
+/* ————————————————————————————
+   Scrollbar Styling
+   ———————————————————————————— */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ————————————————————————————
+   Glassmorphism Utility Classes
+   ———————————————————————————— */
+.glass {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ————————————————————————————
+   Gradient Overlays
+   ———————————————————————————— */
+.gradient-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(15, 23, 42, 0.7) 40%,
+    rgba(15, 23, 42, 0.3) 70%,
+    rgba(15, 23, 42, 0.1) 100%
+  );
+}
+
+.gradient-bottom {
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 1) 0%,
+    rgba(15, 23, 42, 0.6) 50%,
+    transparent 100%
+  );
+}
+
+.gradient-card {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(15, 23, 42, 0.6) 100%
+  );
+}
+
+/* ————————————————————————————
+   Glow Effects
+   ———————————————————————————— */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3),
+              0 0 60px rgba(59, 130, 246, 0.1);
+}
+
+.glow-pink {
+  box-shadow: 0 0 20px rgba(255, 77, 141, 0.3),
+              0 0 60px rgba(255, 77, 141, 0.1);
+}
+
+/* — Detail Page Panels — */
+.detail-panel {
+  background: var(--color-detail-card);
+  border: 1px solid var(--color-detail-border);
+  border-radius: 0.75rem;
+}
+
+.detail-panel-hover {
+  background: var(--color-detail-card);
+  border: 1px solid var(--color-detail-border);
+  border-radius: 0.75rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.detail-panel-hover:hover {
+  background: var(--color-detail-card-hover);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.detail-bg {
+  background: var(--color-detail-bg);
+}
+
+.btn-accent {
+  background: var(--color-detail-accent);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-accent:hover {
+  background: #ff3378;
+  box-shadow: 0 0 20px rgba(255, 77, 141, 0.35);
+}
+
+.glow-text-blue {
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* ————————————————————————————
+   Score Ring Animation
+   ———————————————————————————— */
+@keyframes score-fill {
+  from { stroke-dashoffset: 283; }
+}
+
+.score-ring-animated {
+  animation: score-fill 1.5s ease-out forwards;
+}
+
+/* ————————————————————————————
+   Particle Effect
+   ———————————————————————————— */
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-120vh) translateX(20px); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(96, 165, 250, 0.4);
+  border-radius: 50%;
+  animation: particle-float linear infinite;
+}
+
+/* ————————————————————————————
+   Hide scrollbar for carousels
+   ———————————————————————————— */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ————————————————————————————
+   Skeleton Loading
+   ———————————————————————————— */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.5) 25%,
+    rgba(51, 65, 85, 0.5) 50%,
+    rgba(30, 41, 59, 0.5) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* ————————————————————————————
+   Line clamp
+   ———————————————————————————— */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
