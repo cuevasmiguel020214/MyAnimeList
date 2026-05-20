@@ -32,7 +32,7 @@ export default function AnimeCard({ anime, index: _index = 0 }: AnimeCardProps) 
       onMouseLeave={() => setIsHovered(false)}
       id={`anime-card-${anime.id}`}
     >
-      <Link href={`/`}>
+       <Link href={`/manga/${anime.id}`}>
         {/* Imagen de portada — next/image con fill */}
         <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-slate-800 ring-1 ring-white/[0.06] transition-all duration-300 group-hover:ring-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/10">
           <Image
