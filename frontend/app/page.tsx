@@ -4,6 +4,7 @@ import TrendingCarousel from '@/components/carousels/TrendingCarousel';
 import TopAiringSidebar from '@/components/anime/TopAiringSidebar';
 import ContinueWatchingSection from '@/components/anime/ContinueWatchingSection';
 import RecommendedSection from '@/components/anime/RecommendedSection';
+import SponsorSidebar from '@/components/anime/SponsorSidebar';
 import { featuredAnime, trendingAnime, topAiringAnime, continueWatchingData, recommendedAnime } from '@/data/anime';
 
 /**
@@ -17,7 +18,7 @@ import { featuredAnime, trendingAnime, topAiringAnime, continueWatchingData, rec
  * Secciones:
  * 1. Hero cinematográfico con anime destacado
  * 2. Tendencias — Carrusel horizontal estilo Netflix
- * 3. Grid de contenido: principal + sidebar Top en Emisión (escritorio)
+ * 3. Grid de contenido: principal + sidebar Top en Emisión + sponsors (escritorio)
  * 4. Seguir Viendo — tarjetas con progreso
  * 5. Recomendados Para Ti — grid responsivo
  */
@@ -48,12 +49,18 @@ export default function HomePage() {
             {/* Contenido Principal */}
             <div>
               <ContinueWatchingSection items={continueWatchingData} />
+              
+              {/* Sección de Sponsors para Móviles/Tablets (debajo del contenido principal) */}
+              <div className="block lg:hidden mt-8">
+                <SponsorSidebar />
+              </div>
             </div>
 
             {/* Sidebar — Solo Escritorio */}
             <aside className="hidden lg:block">
-              <div className="sticky top-24">
+              <div className="sticky top-24 space-y-6">
                 <TopAiringSidebar items={topAiringAnime} />
+                <SponsorSidebar />
               </div>
             </aside>
           </div>
