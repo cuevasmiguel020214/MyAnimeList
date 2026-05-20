@@ -308,33 +308,50 @@ export default function MangaDetailClient({
               </p>
             </div>
 
-            {/* SOCIAL + CONTENIDO INCLUIDO */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Social Sharing */}
-              <div className="detail-panel p-4">
-                <h3 className="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider mb-3">Social</h3>
-                <div className="flex gap-2">
-                  {[
-                    { name: 'X', color: '#000000', bg: '#ffffff' },
-                    { name: 'Reddit', color: '#ffffff', bg: '#FF4500' },
-                    { name: 'Tumblr', color: '#ffffff', bg: '#35465C' },
-                    { name: 'FB', color: '#ffffff', bg: '#1877F2' },
-                  ].map((social) => (
-                    <button
-                      key={social.name}
-                      className="flex flex-col items-center gap-1 flex-1"
-                    >
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-transform hover:scale-105"
-                        style={{ background: social.bg, color: social.color }}
-                      >
-                        {social.name === 'X' ? '𝕏' : social.name[0]}
-                      </div>
-                      <span className="text-[10px] text-[#A1A1AA]">compartir</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+
+            
+{/* SOCIAL + CONTENIDO INCLUIDO */}
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  {/* Social Sharing */}
+  <div className="detail-panel p-4 overflow-hidden">
+    <h3 className="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider mb-4 text-center">
+      Social
+    </h3>
+
+    <div className="grid grid-cols-4 gap-2 place-items-center mb-4">
+      {[
+        { name: 'X', color: '#000000', bg: '#ffffff' },
+        { name: 'Reddit', color: '#ffffff', bg: '#FF4500' },
+        { name: 'Tumblr', color: '#ffffff', bg: '#35465C' },
+        { name: 'FB', color: '#ffffff', bg: '#1877F2' },
+      ].map((social) => (
+        <button
+          key={social.name}
+          className="flex items-center justify-center"
+        >
+          <div
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-transform hover:scale-105"
+            style={{
+              background: social.bg,
+              color: social.color,
+            }}
+          >
+            {social.name === 'X' ? '𝕏' : social.name[0]}
+          </div>
+        </button>
+      ))}
+    </div>
+
+    <p className="text-[10px] text-[#A1A1AA] text-center">
+      Compartir
+    </p>
+  </div>
+
+
+
+
+
+
 
               {/* Contenido Incluido */}
               <div className="detail-panel p-4">
