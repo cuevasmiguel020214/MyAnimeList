@@ -19,6 +19,11 @@ const mangaService = {
   search: async (query) => {
     return await Manga.search(query);
   },
+
+  // Filtrar mangas con criterios dinámicos
+  filter: async (filters) => {
+    return await Manga.filter(filters);
+  },
 };
 
 module.exports = mangaService;

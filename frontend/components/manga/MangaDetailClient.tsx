@@ -66,7 +66,7 @@ export default function MangaDetailClient({
   // Score visual — anillo SVG estilo MAL (rosa/fucsia)
   const scoreRadius = 52;
   const scoreCircumference = 2 * Math.PI * scoreRadius;
-  const scoreOffset = scoreCircumference - (manga.score / 10) * scoreCircumference;
+  const scoreOffset = scoreCircumference - ((manga.score || 0) / 10) * scoreCircumference;
 
   return (
     <div className="detail-bg min-h-screen pt-20 pb-16" id="manga-detail-page">
@@ -119,9 +119,9 @@ export default function MangaDetailClient({
                 <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[#A1A1AA]">
                   <span>{manga.type}</span>
                   <span className="w-1 h-1 rounded-full bg-[#A1A1AA]" />
-                  <span>{manga.chapters} Capítulos</span>
+                  <span>{manga.chapters || '?'} Capítulos</span>
                   <span className="w-1 h-1 rounded-full bg-[#A1A1AA]" />
-                  <span>{manga.volumes} Volúmenes</span>
+                  <span>{manga.volumes || '?'} Volúmenes</span>
                   <span className="w-1 h-1 rounded-full bg-[#A1A1AA]" />
                   <span className={
                     manga.status === 'Publishing' ? 'text-green-400' :
@@ -161,7 +161,7 @@ export default function MangaDetailClient({
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-white">{manga.score.toFixed(2)}</span>
+                      <span className="text-3xl font-bold text-white">{(manga.score || 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -203,7 +203,7 @@ export default function MangaDetailClient({
             <div className="detail-panel p-4">
               <h3 className="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider mb-3">Staff</h3>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                {manga.authors.map((author, i) => (
+                {(manga.authors || []).map((author, i) => (
                   <div key={author}>
                     <p className="text-[11px] text-[#A1A1AA]">{i === 0 ? 'Autor' : 'Arte'}</p>
                     <p className="text-sm text-white">{author}</p>
@@ -277,7 +277,7 @@ export default function MangaDetailClient({
 
             {/* Géneros */}
             <div className="flex flex-wrap gap-1.5">
-              {manga.genres.map((genre) => (
+              {(manga.genres || []).map((genre) => (
                 <span
                   key={genre}
                   className="px-2.5 py-1 rounded-md text-xs font-medium bg-[#151A22] border border-[rgba(255,255,255,0.06)] text-[#A1A1AA] hover:text-white hover:border-[rgba(255,255,255,0.12)] transition-colors cursor-pointer"
@@ -285,7 +285,7 @@ export default function MangaDetailClient({
                   {genre}
                 </span>
               ))}
-              {manga.demographics.map((d) => (
+              {(manga.demographics || []).map((d) => (
                 <span
                   key={d}
                   className="px-2.5 py-1 rounded-md text-xs font-medium bg-[#FF4D8D]/10 border border-[#FF4D8D]/20 text-[#FF4D8D] cursor-pointer"

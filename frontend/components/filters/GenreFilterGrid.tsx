@@ -29,6 +29,7 @@ interface GenreFilterGridProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filters?: any[];
   onFilterSelect?: (id: string) => void;
+  onFiltersChange?: (selectedGenres: string[]) => void;
 }
 
 // Estructura de filtros basada exactamente en la referencia visual
@@ -81,14 +82,25 @@ const FILTER_GROUPS = [
   }
 ];
 
-export default function GenreFilterGrid({ onFilterSelect }: GenreFilterGridProps) {
-  const [selected, setSelected] = useState<string[]>(['detective']); // Detective active by default to match screenshot
+export default function GenreFilterGrid({ onFilterSelect, onFiltersChange }: GenreFilterGridProps) {
+  const [selected, setSelected] = useState<string[]>([]);
 
   const toggle = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+    const newSelected = selected.includes(id)
+      ? selected.filter((f) => f !== id)
+      : [...selected, id];
+    
+    setSelected(newSelected);
     onFilterSelect?.(id);
+
+    // Notificar al padre con los nombres de género seleccionados
+    if (onFiltersChange) {
+      const allFilters = FILTER_GROUPS.flatMap((g) => g.filters);
+      const selectedNames = newSelected
+        .map((sid) => allFilters.find((f) => f.id === sid)?.name)
+        .filter((name): name is string => !!name);
+      onFiltersChange(selectedNames);
+    }
   };
 
   return (

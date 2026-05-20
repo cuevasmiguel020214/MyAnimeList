@@ -1,31 +1,118 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, SlidersHorizontal, BookOpen } from 'lucide-react';
+import { Search, SlidersHorizontal, BookOpen, Loader2 } from 'lucide-react';
 import MangaCard from '@/components/cards/MangaCard';
 import GenreFilterGrid from '@/components/filters/GenreFilterGrid';
 import { fadeInUp, staggerContainer } from '@/lib/animations';
-import type { Manga, GenreFilter } from '@/types';
-
-interface MangaSearchClientProps {
-  mangaList: Manga[];
-  genreFilters: GenreFilter[];
-}
+import { fetchAllManga, filterManga, searchAll } from '@/utils/api';
+import type { Manga } from '@/types';
 
 /**
  * MangaSearchClient — Componente cliente que maneja búsqueda + filtrado.
  *
- * Recibe el dataset completo como props desde el Componente de Servidor padre.
- * Maneja: estado de input de búsqueda, toggle de filtros, filtrado en cliente.
+ * Ahora hace fetch real al backend en vez de usar datos mock.
+ * Maneja: estado de input de búsqueda, toggle de filtros, filtrado dinámico.
  */
-export default function MangaSearchClient({ mangaList, genreFilters: _genreFilters }: MangaSearchClientProps) {
+export default function MangaSearchClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(true);
+  const [mangaList, setMangaList] = useState<Manga[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeGenres, setActiveGenres] = useState<string[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const filteredManga = mangaList.filter((m) =>
-    m.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Cargar todos los manga al inicio
+  useEffect(() => {
+    const loadManga = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchAllManga();
+        setMangaList(data);
+      } catch {
+        setError('Error al cargar manga. Verifica que el backend esté corriendo.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadManga();
+  }, []);
+
+  // Búsqueda con debounce
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (query.trim().length === 0) {
+      // Restaurar lista completa o aplicar filtros activos
+      debounceRef.current = setTimeout(async () => {
+        setIsLoading(true);
+        try {
+          if (activeGenres.length > 0) {
+            const data = await filterManga({ genre: activeGenres[0] });
+            setMangaList(data);
+          } else {
+            const data = await fetchAllManga();
+            setMangaList(data);
+          }
+        } catch {
+          // Mantener datos actuales si falla
+        } finally {
+          setIsLoading(false);
+        }
+      }, 200);
+      return;
+    }
+
+    if (query.trim().length < 2) return;
+
+    debounceRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const results = await searchAll(query.trim());
+        setMangaList(results.manga);
+      } catch {
+        setError('Error en la búsqueda');
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+  }, [activeGenres]);
+
+  // Manejar cambio de filtros de género
+  const handleFiltersChange = useCallback(async (selectedGenres: string[]) => {
+    setActiveGenres(selectedGenres);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (selectedGenres.length === 0) {
+        const data = await fetchAllManga();
+        setMangaList(data);
+      } else {
+        // Filtrar por el primer género seleccionado
+        // Para múltiples géneros, el backend necesitaría soporte adicional
+        const data = await filterManga({ genre: selectedGenres[0] });
+        setMangaList(data);
+      }
+    } catch {
+      setError('Error al filtrar manga');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen pt-20" id="manga-search-page">
@@ -62,11 +149,14 @@ export default function MangaSearchClient({ mangaList, genreFilters: _genreFilte
           >
             <div className="relative group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-400 transition-colors" />
+              {isLoading && (
+                <Loader2 className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400 animate-spin" />
+              )}
               <input
                 id="manga-search-input"
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar manga, manhwa, novelas ligeras..."
                 className="w-full pl-14 pr-6 py-4 rounded-2xl text-base text-white placeholder:text-slate-500 glass outline-none focus:ring-1 focus:ring-blue-500/50 focus:shadow-lg focus:shadow-blue-500/10 transition-all duration-300"
               />
@@ -90,7 +180,7 @@ export default function MangaSearchClient({ mangaList, genreFilters: _genreFilte
       {showFilters && (
         <section className="py-8">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <GenreFilterGrid />
+            <GenreFilterGrid onFiltersChange={handleFiltersChange} />
           </div>
         </section>
       )}
@@ -102,24 +192,45 @@ export default function MangaSearchClient({ mangaList, genreFilters: _genreFilte
             <h3 className="text-lg font-bold text-white">
               {searchQuery ? `Resultados para "${searchQuery}"` : 'Todos los Manga'}
               <span className="ml-2 text-sm font-normal text-slate-500">
-                ({filteredManga.length} títulos)
+                ({mangaList.length} títulos)
               </span>
             </h3>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6"
-          >
-            {filteredManga.map((manga) => (
-              <MangaCard key={manga.id} manga={manga} />
-            ))}
-          </motion.div>
+          {/* Error state */}
+          {error && (
+            <div className="text-center py-12">
+              <p className="text-red-400 text-base">{error}</p>
+              <p className="text-sm text-slate-500 mt-2">
+                Asegúrate de que el backend esté corriendo en http://localhost:5000
+              </p>
+            </div>
+          )}
 
-          {filteredManga.length === 0 && (
+          {/* Loading state */}
+          {isLoading && !error && (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+              <span className="ml-3 text-slate-400">Cargando manga...</span>
+            </div>
+          )}
+
+          {/* Results grid */}
+          {!isLoading && !error && (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6"
+            >
+              {mangaList.map((manga) => (
+                <MangaCard key={manga.id} manga={manga} />
+              ))}
+            </motion.div>
+          )}
+
+          {!isLoading && !error && mangaList.length === 0 && (
             <div className="text-center py-20">
               <p className="text-xl text-slate-500">No se encontró manga</p>
               <p className="text-sm text-slate-600 mt-2">Intenta ajustar tu búsqueda o filtros</p>

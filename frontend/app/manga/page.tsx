@@ -1,28 +1,16 @@
-import type { Metadata } from 'next';
+'use client';
+
 import MangaSearchClient from '@/components/manga/MangaSearchClient';
-import { getAllManga } from '@/lib/data';
-import { mangaGenreFilters } from '@/data/manga';
 
 /**
- * Página de Búsqueda de Manga — Componente de Servidor.
+ * Página de Búsqueda de Manga — Componente Cliente.
  *
- * Obtiene datos en el servidor (mock por ahora) y los pasa al
- * componente cliente MangaSearchClient para interactividad.
+ * MangaSearchClient ahora maneja su propio fetch al backend.
+ * Ya no se necesitan datos mock del servidor.
  */
 
-export const metadata: Metadata = {
-  title: 'Búsqueda de Manga — AniVault',
-  description:
-    'Busca y descubre manga, manhwa y novelas ligeras en todos los géneros. Filtra por acción, romance, terror y más.',
-};
+export const dynamic = 'force-dynamic';
 
 export default function MangaSearchPage() {
-  const mangaList = getAllManga();
-
-  return (
-    <MangaSearchClient
-      mangaList={mangaList}
-      genreFilters={mangaGenreFilters}
-    />
-  );
+  return <MangaSearchClient />;
 }

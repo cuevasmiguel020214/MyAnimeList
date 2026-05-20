@@ -41,7 +41,7 @@ export default function MangaCard({ manga }: MangaCardProps) {
           </div>
 
           {/* Badge de demografía */}
-          {manga.demographics[0] && (
+          {manga.demographics?.[0] && (
             <div className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-pink-500/80 backdrop-blur-sm text-[11px] font-bold text-white z-10">
               {manga.demographics[0]}
             </div>
@@ -49,7 +49,7 @@ export default function MangaCard({ manga }: MangaCardProps) {
 
           {/* Overlay al hover */}
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-            <p className="text-xs text-slate-300 line-clamp-3">{manga.synopsis}</p>
+            <p className="text-xs text-slate-300 line-clamp-3">{manga.synopsis || ''}</p>
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export default function MangaCard({ manga }: MangaCardProps) {
           </h3>
           <div className="flex items-center gap-1.5 text-xs text-slate-400">
             <User className="w-3 h-3" />
-            <span className="truncate">{manga.authors[0]}</span>
+            <span className="truncate">{manga.authors?.[0] || 'Desconocido'}</span>
           </div>
           <div className="flex items-center justify-between text-xs text-slate-500">
             <div className="flex items-center gap-1">

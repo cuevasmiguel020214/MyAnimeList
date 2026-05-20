@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -15,9 +16,12 @@ import {
   LogOut,
   Bookmark,
   TrendingUp,
+  Loader2,
+  Star,
 } from 'lucide-react';
 import { useScrollPosition } from '@/hooks';
 import { slideUp } from '@/lib/animations';
+import { searchAll, type SearchResults } from '@/utils/api';
 
 const navLinks = [
   { label: 'Anime', href: '/' },
@@ -32,6 +36,58 @@ export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // ─── Estado de búsqueda ───────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced search
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (query.trim().length < 2) {
+      setSearchResults(null);
+      setShowResults(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const results = await searchAll(query.trim());
+        setSearchResults(results);
+        setShowResults(true);
+      } catch {
+        setSearchResults(null);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+  }, []);
+
+  // Cerrar dropdown al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   return (
     <>
@@ -79,18 +135,28 @@ export default function Navbar() {
             </div>
 
             {/* CENTRO — Barra de búsqueda */}
-            <div className="hidden md:flex flex-1 max-w-md mx-8">
+            <div className="hidden md:flex flex-1 max-w-md mx-8" ref={searchRef}>
               <div
                 className={`relative w-full transition-all duration-300 ${
                   searchFocused ? 'scale-105' : 'scale-100'
                 }`}
               >
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                {isSearching && (
+                  <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400 animate-spin" />
+                )}
                 <input
                   id="nav-search"
                   type="text"
                   placeholder="Buscar anime, manga, personajes..."
-                  onFocus={() => setSearchFocused(true)}
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onFocus={() => {
+                    setSearchFocused(true);
+                    if (searchResults && searchQuery.trim().length >= 2) {
+                      setShowResults(true);
+                    }
+                  }}
                   onBlur={() => setSearchFocused(false)}
                   className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 outline-none transition-all duration-300 ${
                     searchFocused
@@ -98,6 +164,123 @@ export default function Navbar() {
                       : 'bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.08]'
                   }`}
                 />
+
+                {/* Dropdown de resultados */}
+                <AnimatePresence>
+                  {showResults && searchResults && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 right-0 mt-2 rounded-xl bg-[#0F172A]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl shadow-black/40 overflow-hidden z-[60] max-h-[420px] overflow-y-auto"
+                      id="search-results-dropdown"
+                    >
+                      {searchResults.total === 0 ? (
+                        <div className="px-4 py-8 text-center">
+                          <p className="text-slate-400 text-sm">No se encontraron resultados</p>
+                          <p className="text-slate-600 text-xs mt-1">Intenta con otro término</p>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Sección Anime */}
+                          {searchResults.anime.length > 0 && (
+                            <div>
+                              <div className="px-4 py-2 border-b border-white/[0.06]">
+                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                                  Anime ({searchResults.anime.length})
+                                </span>
+                              </div>
+                              {searchResults.anime.slice(0, 5).map((anime) => (
+                                <Link
+                                  key={`anime-${anime.id}`}
+                                  href={`/`}
+                                  onClick={() => {
+                                    setShowResults(false);
+                                    setSearchQuery('');
+                                  }}
+                                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                                >
+                                  <div className="relative w-10 h-14 rounded-md overflow-hidden flex-shrink-0 bg-slate-800">
+                                    <Image
+                                      src={anime.coverImage}
+                                      alt={anime.title}
+                                      fill
+                                      sizes="40px"
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{anime.title}</p>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-[11px] text-slate-400">{anime.type}</span>
+                                      {anime.score > 0 && (
+                                        <span className="flex items-center gap-0.5 text-[11px] text-yellow-400">
+                                          <Star className="w-2.5 h-2.5 fill-current" />
+                                          {anime.score}
+                                        </span>
+                                      )}
+                                      {anime.episodes > 0 && (
+                                        <span className="text-[11px] text-slate-500">{anime.episodes} eps</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Sección Manga */}
+                          {searchResults.manga.length > 0 && (
+                            <div>
+                              <div className="px-4 py-2 border-b border-white/[0.06] border-t border-white/[0.04]">
+                                <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">
+                                  Manga ({searchResults.manga.length})
+                                </span>
+                              </div>
+                              {searchResults.manga.slice(0, 5).map((manga) => (
+                                <Link
+                                  key={`manga-${manga.id}`}
+                                  href={`/manga/${manga.id}`}
+                                  onClick={() => {
+                                    setShowResults(false);
+                                    setSearchQuery('');
+                                  }}
+                                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                                >
+                                  <div className="relative w-10 h-14 rounded-md overflow-hidden flex-shrink-0 bg-slate-800">
+                                    <Image
+                                      src={manga.coverImage}
+                                      alt={manga.title}
+                                      fill
+                                      sizes="40px"
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{manga.title}</p>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-[11px] text-slate-400">{manga.type}</span>
+                                      {manga.score > 0 && (
+                                        <span className="flex items-center gap-0.5 text-[11px] text-yellow-400">
+                                          <Star className="w-2.5 h-2.5 fill-current" />
+                                          {manga.score}
+                                        </span>
+                                      )}
+                                      {manga.chapters > 0 && (
+                                        <span className="text-[11px] text-slate-500">{manga.chapters} caps</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -210,6 +393,8 @@ export default function Navbar() {
                   <input
                     type="text"
                     placeholder="Buscar..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
                     className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm bg-white/[0.06] border border-white/[0.08] text-white placeholder:text-slate-500 outline-none focus:border-blue-500/50"
                   />
                 </div>
